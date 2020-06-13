@@ -5,7 +5,7 @@ const Accessory = require('../models/accessory')
 const router = Router()
 
 router.get('/', async (req, res) => {
-  const { search, from, to } = req.query
+  // const { search, from, to } = req.query
 
   const cubes = await db.getCubes()
 
@@ -16,22 +16,6 @@ router.get('/', async (req, res) => {
     title: 'Cube Workshop',
     cubes: cubes
   })
-  // db.getCubes().then(cubes => {
-  //     if (!cubes || cubes.length === 0) {
-  //       return []
-  //     }
-  //     let filteredSearch = cubes.slice(0)
-  //     if (search) {
-  //       filteredSearch = filteredSearch.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
-  //     }
-
-  //     filteredSearch = filteredSearch.slice(0).filter(c => (+c.difficulty >= (+from || 1)) && (+c.difficulty <= (+to || 10)))
-
-//     res.render('index', {
-//       title: 'Cube Workshop',
-//       cubes: filteredSearch
-//     })
-//   })
 })
 
 router.get('/about', (req, res) => {
@@ -106,9 +90,25 @@ router.post('/create', async (req, res) => {
   res.redirect('/')
 })
 
-router.post('/attach/accessory', (req, res) => {
-
+router.get('/edit/:id', (req, res) => {
+  res.render('editCube', { title: 'Edit cube' })
 })
+
+router.get('/delete/:id', (req, res) => {
+  res.render('deleteCube', { title: 'Delete cube' })
+})
+
+router.get('/register', (req, res) => {
+  res.render('register', {
+    title: 'Register'
+  })
+})
+router.get('/login', (req, res) => {
+  res.render('login', {
+    title: 'Login'
+  })
+})
+router.get('/logout', (req, res) => {})
 
 router.all('*', (req, res) => {
   res.render('404', {
