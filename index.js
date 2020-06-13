@@ -1,4 +1,4 @@
-// require('dotenv').config()
+require('dotenv').config()
 
 const env = process.env.NODE_ENV || 'development'
 
@@ -12,4 +12,4 @@ require('./config/database')
 
 app.use('/', indexRouter)
 
-app.listen(80, console.log(`Listening on port ${process.env.PORT}! Now its up to you...`))
+app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`))
