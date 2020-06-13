@@ -3,5 +3,7 @@ module.exports = {
     port: process.env.PORT || 3000,
     databaseUrl: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-teomh.azure.mongodb.net/cubicle?retryWrites=true&w=majority`
   },
-  production: {}
+  production: {
+    databaseUrl: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-teomh.azure.mongodb.net/cubicle?retryWrites=true&w=majority`
+  }
 }
