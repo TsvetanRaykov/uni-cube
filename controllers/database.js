@@ -1,5 +1,4 @@
 const Cube = require('../models/cube')
-const Accessory = require('../models/accessory')
 
 const getCubes = async () => {
   const cubes = await Cube.find({}).lean()

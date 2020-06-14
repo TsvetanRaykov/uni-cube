@@ -98,22 +98,4 @@ router.get('/delete/:id', (req, res) => {
   res.render('deleteCube', { title: 'Delete cube' })
 })
 
-router.get('/register', (req, res) => {
-  res.render('register', {
-    title: 'Register'
-  })
-})
-router.get('/login', (req, res) => {
-  res.render('login', {
-    title: 'Login'
-  })
-})
-router.get('/logout', (req, res) => {})
-
-router.all('*', (req, res) => {
-  res.render('404', {
-    title: 'Error | Cube not found'
-  })
-})
-
 module.exports = router
