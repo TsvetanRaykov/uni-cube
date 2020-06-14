@@ -17,6 +17,9 @@ router.get('/login', (req, res) => {
     title: 'Login'
   })
 })
+
+router.post('/login', userService.loginUser)
+
 router.get('/logout', (req, res) => {})
 
 module.exports = router
