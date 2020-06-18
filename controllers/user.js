@@ -8,7 +8,8 @@ const saveUser = async (req, res) => {
   const passHash = await bcrypt.hash(password, 10)
 
   const user = new User({
-    username, password: passHash
+    username,
+    password: passHash
   })
 
   const newUser = await user.save()
@@ -43,8 +44,21 @@ const loginUser = async (req, res) => {
   return res.redirect('/login')
 }
 
+const checkAuthentication = (req, res, next) => {
+  const token = req.cookie.aid
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    if (decoded) {
+      return next()
+    }
+  } catch (e) {
+    console.log('Authentication fail:', e)
+  }
+  return req.redirect('/')
+}
+
 function generateToken (data) {
-  return jwt.sign(data, 'THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING')
+  return jwt.sign(data, process.env.JWT_SECRET)
 }
 
 module.exports = {

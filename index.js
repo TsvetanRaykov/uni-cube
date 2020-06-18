@@ -5,6 +5,8 @@ const env = process.env.NODE_ENV || 'development'
 const config = require('./config/config')[env]
 const indexRouter = require('./routes')
 const authRouter = require('./routes/auth')
+const cubeRouter = require('./routes/cube')
+const accessoryRouter = require('./routes/accessory')
 
 const app = require('express')()
 
@@ -13,6 +15,8 @@ require('./config/express')(app)
 require('./config/database')
 
 app.use('/', indexRouter)
+app.use('/', cubeRouter)
+app.use('/', accessoryRouter)
 app.use('/', authRouter)
 
 app.all('*', (req, res) => {

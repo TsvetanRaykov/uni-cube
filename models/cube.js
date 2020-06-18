@@ -26,7 +26,7 @@ const cubeSchema = new mongoose.Schema({
       ref: 'Accessory'
     }
   ],
-  creator: {
+  creatorId: {
     type: 'ObjectId',
     ref: 'User'
   }
