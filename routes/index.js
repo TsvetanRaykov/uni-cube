@@ -1,8 +1,9 @@
 const { Router } = require('express')
 const db = require('../controllers/database')
+const { auth } = require('../controllers/user')
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   // const { search, from, to } = req.query
 
   const cubes = await db.getCubes()
@@ -12,13 +13,15 @@ router.get('/', async (req, res) => {
   }
   res.render('index', {
     title: 'Cube Workshop',
-    cubes: cubes
+    cubes: cubes,
+    isLoggedIn: req.isAuth
   })
 })
 
-router.get('/about', (req, res) => {
+router.get('/about', auth, (req, res) => {
   res.render('about', {
-    title: 'About Cube'
+    title: 'About Cube',
+    isLoggedIn: req.isAuth
   })
 })
 

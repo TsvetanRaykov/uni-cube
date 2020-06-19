@@ -3,9 +3,10 @@ const { Router } = require('express')
 const db = require('../controllers/database')
 const Cube = require('../models/cube')
 const Accessory = require('../models/accessory')
+const { authAccess, authAccessJSON } = require('../controllers/user')
 const router = Router()
 
-router.get('/attach/accessory/:id', async (req, res) => {
+router.get('/attach/accessory/:id', authAccess, async (req, res) => {
   const { id } = req.params
   const cube = await db.getCube(id)
   const accessories = await Accessory.find({
@@ -17,11 +18,12 @@ router.get('/attach/accessory/:id', async (req, res) => {
   res.render('attachAccessory', {
     title: 'Attach Accessory',
     ...cube,
-    accessories
+    accessories,
+    isLoggedIn: req.isAuth
   })
 })
 
-router.post('/attach/accessory', async (req, res) => {
+router.post('/attach/accessory', authAccessJSON, async (req, res) => {
   const { id, accessory } = req.body
   await Cube.updateOne({ _id: id }, {
     $push: {
@@ -32,13 +34,14 @@ router.post('/attach/accessory', async (req, res) => {
   res.redirect(`/attach/accessory/${id}`)
 })
 
-router.get('/create/accessory', (req, res) => {
+router.get('/create/accessory', authAccess, (req, res) => {
   res.render('createAccessory', {
-    title: 'Create Accessory'
+    title: 'Create Accessory',
+    isLoggedIn: req.isAuth
   })
 })
 
-router.post('/create/accessory', async (req, res) => {
+router.post('/create/accessory', authAccessJSON, async (req, res) => {
   const { name, description, imageUrl } = req.body
   const accessory = new Accessory({ name, description, imageUrl })
   try {

@@ -44,17 +44,44 @@ const loginUser = async (req, res) => {
   return res.redirect('/login')
 }
 
-const checkAuthentication = (req, res, next) => {
-  const token = req.cookie.aid
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    if (decoded) {
-      return next()
+const authAccess = (req, res, next) => {
+  auth(req, res, () => {
+    if (req.isAuth) { return next() }
+    return res.redirect('/login')
+  })
+}
+
+const authAccessJSON = (req, res, next) => {
+  auth(req, res, () => {
+    if (req.isAuth) { return next() }
+    return res.json({
+      error: 'Not authenticated!'
+    })
+  })
+}
+
+const guestAccess = (req, res, next) => {
+  auth(req, res, () => {
+    if (req.isAuth) { return res.redirect('/') }
+    return next()
+  })
+}
+
+function auth (req, res, next) {
+  let isAuth = false
+  if (req.cookies && req.cookies.aid) {
+    const token = req.cookies.aid
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      if (decoded) {
+        isAuth = true
+      }
+    } catch (e) {
+      // ignored
     }
-  } catch (e) {
-    console.log('Authentication fail:', e)
   }
-  return req.redirect('/')
+  req.isAuth = isAuth
+  return next()
 }
 
 function generateToken (data) {
@@ -63,5 +90,9 @@ function generateToken (data) {
 
 module.exports = {
   saveUser,
-  loginUser
+  loginUser,
+  authAccess,
+  authAccessJSON,
+  guestAccess,
+  auth
 }
