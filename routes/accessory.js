@@ -47,9 +47,12 @@ router.post('/create/accessory', authAccessJSON, async (req, res) => {
   try {
     await db.createAccessory(accessory)
     res.redirect('/')
-  } catch (err) {
-    console.error(err)
-    res.redirect('/create/accessory')
+  } catch (error) {
+    res.render('createAccessory', {
+      title: 'Create Accessory',
+      isLoggedIn: req.isAuth,
+      error
+    })
   }
 })
 

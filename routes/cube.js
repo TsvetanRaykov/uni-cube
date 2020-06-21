@@ -16,18 +16,24 @@ router.post('/create', authAccessJSON, async (req, res) => {
   const { name, description, imageUrl, difficultyLevel } = req.body
 
   const token = req.cookies.aid
-
   const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-  const cube = new Cube({
-    name,
-    description,
-    imageUrl,
-    difficulty: difficultyLevel,
-    creatorId: decoded.userId
-  })
-  await db.saveCube(cube)
-  res.redirect('/')
+  try {
+    const cube = new Cube({
+      name,
+      description,
+      imageUrl,
+      difficulty: difficultyLevel,
+      creatorId: decoded.userId
+    })
+    await db.saveCube(cube)
+    res.redirect('/')
+  } catch (error) {
+    res.render('create', {
+      title: 'Create Cube',
+      isLoggedIn: req.isAuth,
+      error
+    })
+  }
 })
 
 router.get('/edit/:id', authAccess, async (req, res) => {
@@ -39,12 +45,31 @@ router.get('/edit/:id', authAccess, async (req, res) => {
   })
 })
 
+router.post('/update', (req, res) => {
+  const { name, description, imageUrl, difficultyLevel, id } = req.body
+  Cube.updateOne({ _id: id }, {
+    name, description, imageUrl, difficulty: difficultyLevel
+  }, (err) => {
+    if (err) { console.log(err) } else { res.redirect('/') }
+  })
+})
+
 router.get('/delete/:id', authAccess, async (req, res) => {
   const cube = await db.getCube(req.params.id)
   res.render('deleteCube', {
     title: 'Delete cube',
     isLoggedIn: req.isAuth,
     ...cube
+  })
+})
+
+router.post('/delete', (req, res) => {
+  Cube.deleteOne({ _id: req.body.id }, (err) => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.redirect('/')
+    }
   })
 })
 

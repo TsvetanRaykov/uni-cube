@@ -4,7 +4,11 @@ const config = require('./config')[env]
 const mongoose = require('mongoose')
 
 mongoose.connect(config.databaseUrl,
-  { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  }, (err) => {
     if (err) {
       throw err
     }

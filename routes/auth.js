@@ -12,12 +12,25 @@ router.get('/register', guestAccess, (req, res) => {
   })
 })
 
-router.post('/register', userService.saveUser)
+router.post('/register', async (req, res) => {
+  const { error } = await userService.saveUser(req, res)
+  if (error) {
+    return res.render('register', {
+      title: 'Register',
+      isLoggedIn: req.isAuth,
+      error
+    })
+  } else {
+    return res.redirect('/')
+  }
+})
 
 router.get('/login', guestAccess, (req, res) => {
+  const error = req.query.error ? 'Login failed' : null
   res.render('login', {
     title: 'Login',
-    isLoggedIn: req.isAuth
+    isLoggedIn: req.isAuth,
+    error
   })
 })
 

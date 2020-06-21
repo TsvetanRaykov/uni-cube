@@ -5,43 +5,53 @@ const bcrypt = require('bcrypt')
 const saveUser = async (req, res) => {
   const { username, password } = req.body
 
-  const passHash = await bcrypt.hash(password, 10)
+  try {
+    if (!password || password.length < 8 || !password.match(/^[A-Za-z0-9]+$/g)) {
+      throw Error('Password is invalid')
+    }
 
-  const user = new User({
-    username,
-    password: passHash
-  })
+    const passHash = await bcrypt.hash(password, 10)
 
-  const newUser = await user.save()
+    const user = new User({
+      username,
+      password: passHash
+    })
 
-  const token = generateToken({
-    userId: newUser._id,
-    username: newUser.username
-  })
+    const newUser = await user.save()
 
-  res.cookie('aid', token)
+    const token = generateToken({
+      userId: newUser._id,
+      username: newUser.username
+    })
 
-  return res.redirect('/')
+    res.cookie('aid', token)
+    return token
+  } catch (error) {
+    return { error }
+  }
 }
 
 const loginUser = async (req, res) => {
   const { username, password } = req.body
+  try {
+    const user = await User.findOne({ username }).lean()
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const token = generateToken({
+        userId: user._id,
+        username: user.username
+      })
 
-  const user = await User.findOne({ username }).lean()
-
-  const status = bcrypt.compareSync(password, user.password)
-
-  if (status) {
-    const token = generateToken({
-      userId: user._id,
-      username: user.username
+      res.cookie('aid', token)
+      return res.redirect('/')
+    }
+    throw Error('Login failed')
+  } catch (error) {
+    return res.render('login', {
+      title: 'Login',
+      isLoggedIn: req.isAuth,
+      error
     })
-
-    res.cookie('aid', token)
-    return res.redirect('/')
   }
-
-  return res.redirect('/login')
 }
 
 const authAccess = (req, res, next) => {
